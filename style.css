@@ -1,0 +1,335 @@
+/* CSS Variables */
+:root {
+    --primary: #4361ee;
+    --secondary: #3f37c9;
+    --accent: #4cc9f0;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --danger: #F72585;
+    --break: #7209B7;
+    --lunch: #F94144;
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--dark);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header Styles */
+header {
+    text-align: center;
+    padding: 30px 0;
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--danger));
+}
+
+h1 {
+    color: var(--primary);
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.subtitle {
+    color: var(--secondary);
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Home Page Styles */
+.home-page {
+    display: block;
+}
+
+.classes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    width: 100%;
+}
+
+.class-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.class-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.class-header {
+    background: var(--primary);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.class-name {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.teachers-list {
+    padding: 20px;
+}
+
+.teacher-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin: 10px 0;
+    background: #f8f9ff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    border-left: 4px solid transparent;
+    text-decoration: none;
+    color: var(--dark);
+}
+
+.teacher-item:hover {
+    background: #eef2ff;
+    border-left: 4px solid var(--primary);
+    transform: translateX(5px);
+}
+
+.teacher-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+}
+
+.teacher-info {
+    flex: 1;
+}
+
+.teacher-name {
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.teacher-subject {
+    color: var(--secondary);
+    font-size: 0.9rem;
+}
+
+/* Timetable Page Styles */
+.timetable-page {
+    display: none;
+    width: 100%;
+}
+
+.timetable-page:target {
+    display: block;
+}
+
+.timetable-page:target ~ .home-page {
+    display: none;
+}
+
+.timetable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+}
+
+.teacher-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.back-button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.back-button:hover {
+    background: var(--secondary);
+    transform: translateX(-5px);
+}
+
+.timetable-container {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.timetable th {
+    background: var(--primary);
+    color: white;
+    padding: 18px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.timetable td {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.timetable tr:nth-child(even) {
+    background: #f9f9ff;
+}
+
+.period {
+    font-weight: 600;
+    color: var(--dark);
+    width: 15%;
+}
+
+.time {
+    color: var(--secondary);
+    width: 20%;
+}
+
+.subject {
+    width: 40%;
+}
+
+.teacher {
+    width: 25%;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.break-row td {
+    background: #fef6ff !important;
+    color: var(--break);
+    font-weight: 600;
+}
+
+.lunch-row td {
+    background: #fff5f5 !important;
+    color: var(--lunch);
+    font-weight: 600;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 25px;
+    color: var(--secondary);
+    font-size: 0.9rem;
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .timetable-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .teacher-details {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .timetable th, 
+    .timetable td {
+        padding: 10px 5px;
+        font-size: 0.85rem;
+    }
+    
+    .back-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .classes-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .timetable {
+        font-size: 0.8rem;
+    }
+    
+    h1 {
+        font-size: 2.2rem;
+    }
+    
+    .timetable th, 
+    .timetable td {
+        padding: 8px 3px;
+        font-size: 0.75rem;
+    }
+}
