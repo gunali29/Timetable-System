@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Timetable System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --danger: #F72585;
+            --break: #7209B7;
+            --lunch: #F94144;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --border-radius: 15px;
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--danger));
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Timing Guide */
+        .timing-guide {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .timing-guide h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .guide-item {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .guide-time {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .guide-desc {
+            color: var(--secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Home Page Styles */
+        .home-page {
+            display: block;
+        }
+
+        .classes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .class-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .class-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .class-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .teachers-list {
+            padding: 20px;
+        }
+
+        .teacher-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: #f8f9ff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .teacher-item:hover {
+            background: #eef2ff;
+            border-left: 4px solid var(--primary);
+            transform: translateX(5px);
+        }
+
+        .teacher-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .teacher-info {
+            flex: 1;
+        }
+
+        .teacher-name {
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .teacher-subject {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Timetable Page Styles */
+        .timetable-page {
+            display: none;
+            width: 100%;
+        }
+
+        .timetable-page:target {
+            display: block;
+        }
+
+        .timetable-page:target ~ .home-page {
+            display: none;
+        }
+
+        .timetable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .teacher-details {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: var(--secondary);
+            transform: translateX(-5px);
+        }
+
+        /* Box Timetable */
+        .box-timetable {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .period-box {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .period-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .period-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+
+        .period-box.break::before {
+            background: var(--break);
+        }
+
+        .period-box.lunch::before {
+            background: var(--lunch);
+        }
+
+        .period-box.regular::before {
+            background: var(--primary);
+        }
+
+        .period-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .period-time {
+            color: var(--secondary);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .period-details {
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .period-details div {
+            margin-bottom: 8px;
+            display: flex;
+        }
+
+        .period-details span:first-child {
+            font-weight: 600;
+            min-width: 80px;
+            color: var(--dark);
+        }
+
+        .period-details span:last-child {
+            color: var(--secondary);
+        }
+
+        /* Footer Styles */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .timetable-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .teacher-details {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .back-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .classes-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .box-timetable {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chalkboard-teacher"></i> School Timetable System</h1>
+            <p class="subtitle">View teacher schedules and class timetables at a glance</p>
+        </header>
+
+        <!-- Timing Guide -->
+        <div class="timing-guide">
+            <h2><i class="fas fa-clock"></i> School Timing Guide</h2>
+            <div class="guide-grid">
+                <div class="guide-item">
+                    <div class="guide-time">7:45 AM - 8:00 AM</div>
+                    <div class="guide-desc">School gates open (latecomers not allowed)</div>
+                </div>
+                <div class="guide-item">
+                    <div class="guide-time">8:00 AM - 8:45 AM</div>
+                    <div class="guide-desc">Period 1 - Morning Assembly</div>
+                </div>
+                <div class="guide-item">
+                    <div class="guide-time">9:30 AM - 9:45 AM</div>
+                    <div class="guide-desc">First Break (15 minutes)</div>
+                </div>
+                <div class="guide-item">
+                    <div class="guide-time">11:15 AM - 12:00 PM</div>
+                    <div class="guide-desc">Lunch Break (45 minutes)</div>
+                </div>
+                <div class="guide-item">
+                    <div class="guide-time">1:30 PM - 1:45 PM</div>
+                    <div class="guide-desc">Second Break (15 minutes)</div>
+                </div>
+                <div class="guide-item">
+                    <div class="guide-time">3:15 PM - 3:30 PM</div>
+                    <div class="guide-desc">Dispersal (All students must leave)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Page -->
+        <div id="homePage" class="home-page">
+            <div class="classes-container">
+                <!-- Class A -->
+                <div class="class-card">
+                    <div class="class-header">
+                        <h2 class="class-name">Class A</h2>
+                        <p>Grade 10 - Section A</p>
+                    </div>
+                    <div class="teachers-list">
+                        <a href="#maliga" class="teacher-item">
+                            <div class="teacher-icon">
+                                <span>M</span>
+                            </div>
+                            <div class="teacher-info">
+                                <div class="teacher-name">Maliga Maam</div>
+                                <div class="teacher-subject">Mathematics & Physics</div>
+                            </div>
+                        </a>
+                        
+                        <a href="#rajesh" class="teacher-item">
+                            <div class="teacher-icon">
+                                <span>R</span>
+                            </div>
+                            <div class="teacher-info">
+                                <div class="teacher-name">Rajesh Sir</div>
+                                <div class="teacher-subject">Chemistry & Biology</div>
+                            </div>
+                        </a>
+                        
+                        <a href="#priya" class="teacher-item">
+                            <div class="teacher-icon">
+                                <span>P</span>
+                            </div>
+                            <div class="teacher-info">
+                                <div class="teacher-name">Priya Maam</div>
+                                <div class="teacher-subject">English Literature</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Class B -->
+                <div class="class-card">
+                    <div class="class-header" style="background: #7209B7;">
+                        <h2 class="class-name">Class B</h2>
+                        <p>Grade 10 - Section B</p>
+                    </div>
+                    <div class="teachers-list">
+                        <a href="#karthik" class="teacher-item">
+                            <div class="teacher-icon" style="background: #7209B7;">
+                                <span>K</span>
+                            </div>
+                            <div class="teacher-info">
+                                <div class="teacher-name">Karthik Sir</div>
+                                <div class="teacher-subject">Computer Science</div>
+                            </div>
+                        </a>
+                        
+                        <a href="#ananya" class="teacher-item">
+                            <div class="teacher-icon" style="background: #7209B7;">
+                                <span>A</span>
+                            </div>
+                            <div class="teacher-info">
+                                <div class="teacher-name">Ananya Maam</div>
+                                <div class="teacher-subject">Social Studies</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Class C -->
+                <div class="class-card">
+                    <div class="class-header" style="background: #F94144;">
+                        <h2 class="class-name">Class C</h2>
+                        <p>Grade 10 - Section C</p>
+                    </div>
+                    <div class="teachers-list">
+                        <a href="#suresh" class="teacher-item">
+                            <div class="teacher-icon" style="background: #F94144;">
+                                <span>S</span>
+                            </div>
+                            <div class="teacher-info">
+                                <div class="teacher-name">Suresh Sir</div>
+                                <div class="teacher-subject">Physical Education</div>
+                            </div>
+                        </a>
+                        
+                        <a href="#geetha" class="teacher-item">
+                            <div class="teacher-icon" style="background: #F94144;">
+                                <span>G</span>
+                            </div>
+                            <div class="teacher-info">
+                                <div class="teacher-name">Geetha Maam</div>
+                                <div class="teacher-subject">Art & Craft</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timetable Pages -->
+        <!-- Maliga Maam's Timetable -->
+        <div id="maliga" class="timetable-page">
+            <div class="timetable-header">
+                <div class="teacher-details">
+                    <div class="teacher-icon">
+                        <span>M</span>
+                    </div>
+                    <div>
+                        <h2>Maliga Maam</h2>
+                        <p>Mathematics & Physics Teacher</p>
+                    </div>
+                </div>
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Teachers
+                </a>
+            </div>
+
+            <div class="box-timetable">
+                <!-- Period 1 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 1</div>
+                    <span class="period-time">8:00 AM - 8:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Mathematics</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 201</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 2 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 2</div>
+                    <span class="period-time">8:45 AM - 9:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Physics</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Science Lab</span></div>
+                    </div>
+                </div>
+
+                <!-- First Break -->
+                <div class="period-box break">
+                    <div class="period-title">First Break</div>
+                    <span class="period-time">9:30 AM - 9:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 3 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 3</div>
+                    <span class="period-time">9:45 AM - 10:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Mathematics</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Room 205</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 4 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 4</div>
+                    <span class="period-time">10:30 AM - 11:15 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Physics</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Science Lab</span></div>
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="period-box lunch">
+                    <div class="period-title">Lunch Break</div>
+                    <span class="period-time">11:15 AM - 12:00 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>45 minutes</span></div>
+                        <div><span>Location:</span> <span>Cafeteria</span></div>
+                        <div><span>Activity:</span> <span>Lunch Time</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 5 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 5</div>
+                    <span class="period-time">12:00 PM - 12:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Mathematics</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Room 203</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 6 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 6</div>
+                    <span class="period-time">12:45 PM - 1:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Physics</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Science Lab</span></div>
+                    </div>
+                </div>
+
+                <!-- Second Break -->
+                <div class="period-box break">
+                    <div class="period-title">Second Break</div>
+                    <span class="period-time">1:30 PM - 1:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 7 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 7</div>
+                    <span class="period-time">1:45 PM - 2:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Remedial Class</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 201</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 8 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 8</div>
+                    <span class="period-time">2:30 PM - 3:15 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Faculty Meeting</span></div>
+                        <div><span>Class:</span> <span>All Teachers</span></div>
+                        <div><span>Room:</span> <span>Conference Hall</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rajesh Sir's Timetable -->
+        <div id="rajesh" class="timetable-page">
+            <div class="timetable-header">
+                <div class="teacher-details">
+                    <div class="teacher-icon">
+                        <span>R</span>
+                    </div>
+                    <div>
+                        <h2>Rajesh Sir</h2>
+                        <p>Chemistry & Biology Teacher</p>
+                    </div>
+                </div>
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Teachers
+                </a>
+            </div>
+
+            <div class="box-timetable">
+                <!-- Period 1 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 1</div>
+                    <span class="period-time">8:00 AM - 8:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Chemistry</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Science Lab</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 2 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 2</div>
+                    <span class="period-time">8:45 AM - 9:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Biology</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 202</span></div>
+                    </div>
+                </div>
+
+                <!-- First Break -->
+                <div class="period-box break">
+                    <div class="period-title">First Break</div>
+                    <span class="period-time">9:30 AM - 9:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 3 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 3</div>
+                    <span class="period-time">9:45 AM - 10:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Chemistry</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Science Lab</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 4 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 4</div>
+                    <span class="period-time">10:30 AM - 11:15 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Biology</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Room 202</span></div>
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="period-box lunch">
+                    <div class="period-title">Lunch Break</div>
+                    <span class="period-time">11:15 AM - 12:00 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>45 minutes</span></div>
+                        <div><span>Location:</span> <span>Cafeteria</span></div>
+                        <div><span>Activity:</span> <span>Lunch Time</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 5 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 5</div>
+                    <span class="period-time">12:00 PM - 12:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Chemistry</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Science Lab</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 6 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 6</div>
+                    <span class="period-time">12:45 PM - 1:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Biology</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Room 202</span></div>
+                    </div>
+                </div>
+
+                <!-- Second Break -->
+                <div class="period-box break">
+                    <div class="period-title">Second Break</div>
+                    <span class="period-time">1:30 PM - 1:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 7 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 7</div>
+                    <span class="period-time">1:45 PM - 2:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Lab Session</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Science Lab</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 8 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 8</div>
+                    <span class="period-time">2:30 PM - 3:15 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Faculty Meeting</span></div>
+                        <div><span>Class:</span> <span>All Teachers</span></div>
+                        <div><span>Room:</span> <span>Conference Hall</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Priya Maam's Timetable -->
+        <div id="priya" class="timetable-page">
+            <div class="timetable-header">
+                <div class="teacher-details">
+                    <div class="teacher-icon">
+                        <span>P</span>
+                    </div>
+                    <div>
+                        <h2>Priya Maam</h2>
+                        <p>English Literature Teacher</p>
+                    </div>
+                </div>
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Teachers
+                </a>
+            </div>
+
+            <div class="box-timetable">
+                <!-- Period 1 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 1</div>
+                    <span class="period-time">8:00 AM - 8:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>English Literature</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Room 204</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 2 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 2</div>
+                    <span class="period-time">8:45 AM - 9:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>English Grammar</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 204</span></div>
+                    </div>
+                </div>
+
+                <!-- First Break -->
+                <div class="period-box break">
+                    <div class="period-title">First Break</div>
+                    <span class="period-time">9:30 AM - 9:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 3 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 3</div>
+                    <span class="period-time">9:45 AM - 10:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>English Literature</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Room 204</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 4 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 4</div>
+                    <span class="period-time">10:30 AM - 11:15 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Creative Writing</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 204</span></div>
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="period-box lunch">
+                    <div class="period-title">Lunch Break</div>
+                    <span class="period-time">11:15 AM - 12:00 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>45 minutes</span></div>
+                        <div><span>Location:</span> <span>Cafeteria</span></div>
+                        <div><span>Activity:</span> <span>Lunch Time</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 5 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 5</div>
+                    <span class="period-time">12:00 PM - 12:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>English Literature</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 204</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 6 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 6</div>
+                    <span class="period-time">12:45 PM - 1:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>English Grammar</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Room 204</span></div>
+                    </div>
+                </div>
+
+                <!-- Second Break -->
+                <div class="period-box break">
+                    <div class="period-title">Second Break</div>
+                    <span class="period-time">1:30 PM - 1:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 7 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 7</div>
+                    <span class="period-time">1:45 PM - 2:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Debate Club</span></div>
+                        <div><span>Class:</span> <span>All Interested</span></div>
+                        <div><span>Room:</span> <span>Auditorium</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 8 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 8</div>
+                    <span class="period-time">2:30 PM - 3:15 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Faculty Meeting</span></div>
+                        <div><span>Class:</span> <span>All Teachers</span></div>
+                        <div><span>Room:</span> <span>Conference Hall</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Karthik Sir's Timetable -->
+        <div id="karthik" class="timetable-page">
+            <div class="timetable-header">
+                <div class="teacher-details">
+                    <div class="teacher-icon" style="background: #7209B7;">
+                        <span>K</span>
+                    </div>
+                    <div>
+                        <h2>Karthik Sir</h2>
+                        <p>Computer Science Teacher</p>
+                    </div>
+                </div>
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Teachers
+                </a>
+            </div>
+
+            <div class="box-timetable">
+                <!-- Period 1 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 1</div>
+                    <span class="period-time">8:00 AM - 8:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Computer Science</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Computer Lab 1</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 2 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 2</div>
+                    <span class="period-time">8:45 AM - 9:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Programming</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Computer Lab 2</span></div>
+                    </div>
+                </div>
+
+                <!-- First Break -->
+                <div class="period-box break">
+                    <div class="period-title">First Break</div>
+                    <span class="period-time">9:30 AM - 9:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 3 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 3</div>
+                    <span class="period-time">9:45 AM - 10:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Web Development</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Computer Lab 1</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 4 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 4</div>
+                    <span class="period-time">10:30 AM - 11:15 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Computer Science</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Computer Lab 2</span></div>
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="period-box lunch">
+                    <div class="period-title">Lunch Break</div>
+                    <span class="period-time">11:15 AM - 12:00 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>45 minutes</span></div>
+                        <div><span>Location:</span> <span>Cafeteria</span></div>
+                        <div><span>Activity:</span> <span>Lunch Time</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 5 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 5</div>
+                    <span class="period-time">12:00 PM - 12:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Programming</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Computer Lab 1</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 6 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 6</div>
+                    <span class="period-time">12:45 PM - 1:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Web Development</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Computer Lab 2</span></div>
+                    </div>
+                </div>
+
+                <!-- Second Break -->
+                <div class="period-box break">
+                    <div class="period-title">Second Break</div>
+                    <span class="period-time">1:30 PM - 1:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 7 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 7</div>
+                    <span class="period-time">1:45 PM - 2:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Coding Club</span></div>
+                        <div><span>Class:</span> <span>All Interested</span></div>
+                        <div><span>Room:</span> <span>Computer Lab 1</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 8 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 8</div>
+                    <span class="period-time">2:30 PM - 3:15 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Faculty Meeting</span></div>
+                        <div><span>Class:</span> <span>All Teachers</span></div>
+                        <div><span>Room:</span> <span>Conference Hall</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ananya Maam's Timetable -->
+        <div id="ananya" class="timetable-page">
+            <div class="timetable-header">
+                <div class="teacher-details">
+                    <div class="teacher-icon" style="background: #7209B7;">
+                        <span>A</span>
+                    </div>
+                    <div>
+                        <h2>Ananya Maam</h2>
+                        <p>Social Studies Teacher</p>
+                    </div>
+                </div>
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Teachers
+                </a>
+            </div>
+
+            <div class="box-timetable">
+                <!-- Period 1 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 1</div>
+                    <span class="period-time">8:00 AM - 8:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>History</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Room 206</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 2 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 2</div>
+                    <span class="period-time">8:45 AM - 9:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Civics</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Room 206</span></div>
+                    </div>
+                </div>
+
+                <!-- First Break -->
+                <div class="period-box break">
+                    <div class="period-title">First Break</div>
+                    <span class="period-time">9:30 AM - 9:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 3 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 3</div>
+                    <span class="period-time">9:45 AM - 10:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Geography</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 206</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 4 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 4</div>
+                    <span class="period-time">10:30 AM - 11:15 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>History</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Room 206</span></div>
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="period-box lunch">
+                    <div class="period-title">Lunch Break</div>
+                    <span class="period-time">11:15 AM - 12:00 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>45 minutes</span></div>
+                        <div><span>Location:</span> <span>Cafeteria</span></div>
+                        <div><span>Activity:</span> <span>Lunch Time</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 5 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 5</div>
+                    <span class="period-time">12:00 PM - 12:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Civics</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Room 206</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 6 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 6</div>
+                    <span class="period-time">12:45 PM - 1:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Geography</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Room 206</span></div>
+                    </div>
+                </div>
+
+                <!-- Second Break -->
+                <div class="period-box break">
+                    <div class="period-title">Second Break</div>
+                    <span class="period-time">1:30 PM - 1:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 7 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 7</div>
+                    <span class="period-time">1:45 PM - 2:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>History Club</span></div>
+                        <div><span>Class:</span> <span>All Interested</span></div>
+                        <div><span>Room:</span> <span>Library</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 8 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 8</div>
+                    <span class="period-time">2:30 PM - 3:15 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Faculty Meeting</span></div>
+                        <div><span>Class:</span> <span>All Teachers</span></div>
+                        <div><span>Room:</span> <span>Conference Hall</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suresh Sir's Timetable -->
+        <div id="suresh" class="timetable-page">
+            <div class="timetable-header">
+                <div class="teacher-details">
+                    <div class="teacher-icon" style="background: #F94144;">
+                        <span>S</span>
+                    </div>
+                    <div>
+                        <h2>Suresh Sir</h2>
+                        <p>Physical Education Teacher</p>
+                    </div>
+                </div>
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Teachers
+                </a>
+            </div>
+
+            <div class="box-timetable">
+                <!-- Period 1 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 1</div>
+                    <span class="period-time">8:00 AM - 8:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Physical Education</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Sports Ground</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 2 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 2</div>
+                    <span class="period-time">8:45 AM - 9:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Yoga</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Yoga Hall</span></div>
+                    </div>
+                </div>
+
+                <!-- First Break -->
+                <div class="period-box break">
+                    <div class="period-title">First Break</div>
+                    <span class="period-time">9:30 AM - 9:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 3 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 3</div>
+                    <span class="period-time">9:45 AM - 10:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Physical Education</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Sports Ground</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 4 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 4</div>
+                    <span class="period-time">10:30 AM - 11:15 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Yoga</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Yoga Hall</span></div>
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="period-box lunch">
+                    <div class="period-title">Lunch Break</div>
+                    <span class="period-time">11:15 AM - 12:00 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>45 minutes</span></div>
+                        <div><span>Location:</span> <span>Cafeteria</span></div>
+                        <div><span>Activity:</span> <span>Lunch Time</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 5 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 5</div>
+                    <span class="period-time">12:00 PM - 12:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Physical Education</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Sports Ground</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 6 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 6</div>
+                    <span class="period-time">12:45 PM - 1:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Yoga</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Yoga Hall</span></div>
+                    </div>
+                </div>
+
+                <!-- Second Break -->
+                <div class="period-box break">
+                    <div class="period-title">Second Break</div>
+                    <span class="period-time">1:30 PM - 1:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 7 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 7</div>
+                    <span class="period-time">1:45 PM - 2:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Sports Practice</span></div>
+                        <div><span>Class:</span> <span>School Team</span></div>
+                        <div><span>Room:</span> <span>Sports Ground</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 8 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 8</div>
+                    <span class="period-time">2:30 PM - 3:15 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Faculty Meeting</span></div>
+                        <div><span>Class:</span> <span>All Teachers</span></div>
+                        <div><span>Room:</span> <span>Conference Hall</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geetha Maam's Timetable -->
+        <div id="geetha" class="timetable-page">
+            <div class="timetable-header">
+                <div class="teacher-details">
+                    <div class="teacher-icon" style="background: #F94144;">
+                        <span>G</span>
+                    </div>
+                    <div>
+                        <h2>Geetha Maam</h2>
+                        <p>Art & Craft Teacher</p>
+                    </div>
+                </div>
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Teachers
+                </a>
+            </div>
+
+            <div class="box-timetable">
+                <!-- Period 1 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 1</div>
+                    <span class="period-time">8:00 AM - 8:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Drawing</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Art Room</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 2 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 2</div>
+                    <span class="period-time">8:45 AM - 9:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Craft</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Art Room</span></div>
+                    </div>
+                </div>
+
+                <!-- First Break -->
+                <div class="period-box break">
+                    <div class="period-title">First Break</div>
+                    <span class="period-time">9:30 AM - 9:45 AM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 3 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 3</div>
+                    <span class="period-time">9:45 AM - 10:30 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Painting</span></div>
+                        <div><span>Class:</span> <span>Class C</span></div>
+                        <div><span>Room:</span> <span>Art Room</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 4 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 4</div>
+                    <span class="period-time">10:30 AM - 11:15 AM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Drawing</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Art Room</span></div>
+                    </div>
+                </div>
+
+                <!-- Lunch Break -->
+                <div class="period-box lunch">
+                    <div class="period-title">Lunch Break</div>
+                    <span class="period-time">11:15 AM - 12:00 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>45 minutes</span></div>
+                        <div><span>Location:</span> <span>Cafeteria</span></div>
+                        <div><span>Activity:</span> <span>Lunch Time</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 5 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 5</div>
+                    <span class="period-time">12:00 PM - 12:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Craft</span></div>
+                        <div><span>Class:</span> <span>Class B</span></div>
+                        <div><span>Room:</span> <span>Art Room</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 6 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 6</div>
+                    <span class="period-time">12:45 PM - 1:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Painting</span></div>
+                        <div><span>Class:</span> <span>Class A</span></div>
+                        <div><span>Room:</span> <span>Art Room</span></div>
+                    </div>
+                </div>
+
+                <!-- Second Break -->
+                <div class="period-box break">
+                    <div class="period-title">Second Break</div>
+                    <span class="period-time">1:30 PM - 1:45 PM</span>
+                    <div class="period-details">
+                        <div><span>Duration:</span> <span>15 minutes</span></div>
+                        <div><span>Location:</span> <span>Staff Room</span></div>
+                        <div><span>Activity:</span> <span>Short Break</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 7 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 7</div>
+                    <span class="period-time">1:45 PM - 2:30 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Art Club</span></div>
+                        <div><span>Class:</span> <span>All Interested</span></div>
+                        <div><span>Room:</span> <span>Art Room</span></div>
+                    </div>
+                </div>
+
+                <!-- Period 8 -->
+                <div class="period-box regular">
+                    <div class="period-title">Period 8</div>
+                    <span class="period-time">2:30 PM - 3:15 PM</span>
+                    <div class="period-details">
+                        <div><span>Subject:</span> <span>Faculty Meeting</span></div>
+                        <div><span>Class:</span> <span>All Teachers</span></div>
+                        <div><span>Room:</span> <span>Conference Hall</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>© 2023 School Timetable System | Designed for Educational Institutions</p>
+            <p>Pure HTML & CSS Solution - No JavaScript Required</p>
+        </footer>
+    </div>
+</body>
+</html>
